@@ -1,7 +1,7 @@
 console.log('From index.js');
 
-const { BrowserWindow } = require('@electron/remote');
-const { desktopCapturer, ipcRenderer } = require('electron');
+const { BrowserWindow, desktopCapturer } = require('@electron/remote');
+const { ipcRenderer } = require('electron');
 
 var imgCropWindow;
 
@@ -20,6 +20,8 @@ function createScreenshotWindow(requestType) {
         nodeIntegration: true,
         contextIsolation: false,
         enableRemoteModule: true,
+        nodeIntegrationInWorker: true,
+        webSecurity: false,
       },
     });
     imgCropWindow.loadFile('mask.html').then(() => {
@@ -90,7 +92,8 @@ function takeScreenshot(callback, imageFormat) {
         if (
           source.name === 'Entire Screen' ||
           source.name === 'Screen 1' ||
-          source.name === 'Screen 2'
+          source.name === 'Screen 2' ||
+          source.name === '화면 1'
         ) {
           try {
             const stream = await navigator.mediaDevices.getUserMedia({

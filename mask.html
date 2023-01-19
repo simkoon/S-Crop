@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="img-src 'self' blob: data:; default-src 'self'; script-src 'self'"
+      content="default-src * data: 'unsafe-eval' 'unsafe-inline' blob:"
     />
     <meta
       http-equiv="X-Content-Security-Policy"
-      content="img-src 'self' blob: data:; default-src 'self'; script-src 'self'"
+      content="default-src * data: 'unsafe-eval' 'unsafe-inline' blob:"
     />
 
     <title>Document</title>
@@ -17,10 +17,12 @@
 
     <link rel="stylesheet" href="vendor/jcrop.css" />
     <script type="text/javascript" src="vendor/jcrop.js"></script>
+    <!-- <script type="text/javascript" src="vendor/tesseract.min.js"></script> -->
+    <script type="text/javascript" src="vendor/tesseract.min.js"></script>
   </head>
 
-  <body>
-    <img src="Screenshot.png" id="target" />
+  <body style="overflow: hidden;">
+    <img id="target" />
     <div id="snackbarLoad">Processing...</div>
     <div id="snackbarText"></div>
     <script src="mask.js"></script>

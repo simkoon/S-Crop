@@ -3,8 +3,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 const { ipcRenderer, clipboard, nativeImage } = require('electron');
 const { getCurrentWindow } = require('@electron/remote');
 
-var Tesseract = require('tesseract.js');
-
 function blob_to_buffer(blob, callback) {
   const file_reader = new FileReader();
 
@@ -95,20 +93,20 @@ function mask(imageURL, type) {
           });
         });
       } else if (type == 2) {
-        console.log('여까지옴?1');
         var imgUrl = canvasElement.toDataURL();
-        Tesseract.recognize(imgUrl, 'eng', {
-          logger: (m) => console.log('뭔데', m),
+        Tesseract.recognize(imgUrl, 'eng+kor', {
+          logger: (m) => console.log(m),
         }).then(({ data: { text } }) => {
           console.log(text);
           clipboard.writeText(text);
+          console.log('clicapbo::', clipboard);
           var x = document.getElementById('snackbarText');
           x.innerHTML = 'Text copied to clipboard..!!❤️';
           x1.className = x1.className.replace('show', '');
           x.className = 'show';
           setTimeout(function () {
             x.className = x.className.replace('show', '');
-            window.close();
+            // window.close();
           }, 1000);
         });
       }

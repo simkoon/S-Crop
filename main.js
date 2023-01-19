@@ -1,9 +1,9 @@
 require('v8-compile-cache');
 
-const { app, BrowserWindow, globalShortcut } = require('electron');
+const { app, BrowserWindow, globalShortcut, session } = require('electron');
 const path = require('path');
-
-require('@electron/remote/main').initialize();
+const remoteMain = require('@electron/remote/main');
+remoteMain.initialize();
 
 var mainWindow;
 
@@ -18,7 +18,8 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true,
+      nodeIntegrationInWorker: true,
+      webSecurity: false,
     },
   });
   mainWindow.removeMenu();
@@ -33,6 +34,16 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+  //   console.log('뭐냐', details);
+  //   callback({
+  //     responseHeaders: {
+  //       ...details.responseHeaders,
+  //       'Content-Security-Policy': '',
+  //     },
+  //   });
+  // });
+
   createWindow();
 
   app.on('activate', function () {
@@ -60,6 +71,10 @@ app.on('window-all-closed', function () {
     globalShortcut.unregisterAll();
     app.quit();
   }
+});
+
+app.on('browser-window-created', (_, window) => {
+  remoteMain.enable(window.webContents);
 });
 
 app.on('will-quit', () => {
