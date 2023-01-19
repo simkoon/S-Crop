@@ -62,7 +62,20 @@ app.whenReady().then(() => {
     mainWindow.webContents.send('close-crop');
   });
 });
-
+app.on('browser-window-blur', () => {
+  globalShortcut.unregisterAll();
+});
+app.on('browser-window-focus', () => {
+  globalShortcut.register('Alt+CommandOrControl+I', () => {
+    mainWindow.webContents.send('key-shortcut', 1);
+  });
+  globalShortcut.register('Alt+CommandOrControl+O', () => {
+    mainWindow.webContents.send('key-shortcut-ocr', 2);
+  });
+  globalShortcut.register('Esc', () => {
+    mainWindow.webContents.send('close-crop');
+  });
+});
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
