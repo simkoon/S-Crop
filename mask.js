@@ -98,15 +98,33 @@ function mask(imageURL, type) {
           logger: (m) => console.log(m),
         }).then(({ data: { text } }) => {
           console.log(text);
-          clipboard.writeText(text);
-          console.log('clicapbo::', clipboard);
+          console.dir(JSON.stringify({ text }));
+          const pasedHtml = text
+            .split('\n')
+            .map(
+              (line) =>
+                `<tr>${line
+                  .split(' ')
+                  .reduce((result, td) => `${result}<td>${td}</td>`, '')}</tr>`
+            );
+          console.log(`
+          <table>
+           ${pasedHtml.reduce((acc, cur) => acc + cur)}
+          </table>
+          `);
+          clipboard.writeHTML(`
+          <table>
+           ${pasedHtml.reduce((acc, cur) => acc + cur, '')}
+          </table>
+          `);
+          console.log(clipboard.readRTF());
           var x = document.getElementById('snackbarText');
           x.innerHTML = 'Text copied to clipboard..!!❤️';
           x1.className = x1.className.replace('show', '');
           x.className = 'show';
           setTimeout(function () {
             x.className = x.className.replace('show', '');
-            // window.close();
+            window.close();
           }, 1000);
         });
       }

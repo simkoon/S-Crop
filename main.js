@@ -26,7 +26,7 @@ function createWindow() {
   mainWindow.loadFile('index.html');
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    mainWindow.openDevTools();
+    // mainWindow.openDevTools();
   });
 }
 

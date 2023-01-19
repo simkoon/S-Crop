@@ -30,7 +30,7 @@ function createScreenshotWindow(requestType) {
 
     imgCropWindow.once('ready-to-show', () => {
       imgCropWindow.show();
-      imgCropWindow.openDevTools();
+      // imgCropWindow.openDevTools();
     });
   }, 'image/png');
 }
