@@ -1,6 +1,8 @@
-console.log('From index.js');
-
-const { BrowserWindow, desktopCapturer } = require('@electron/remote');
+const {
+  BrowserWindow,
+  desktopCapturer,
+  globalShortcut,
+} = require('@electron/remote');
 const { ipcRenderer } = require('electron');
 
 var imgCropWindow;
@@ -30,7 +32,14 @@ function createScreenshotWindow(requestType) {
 
     imgCropWindow.once('ready-to-show', () => {
       imgCropWindow.show();
+      globalShortcut.register('Esc', () => {
+        imgCropWindow.close();
+      });
       // imgCropWindow.openDevTools();
+    });
+
+    imgCropWindow.on('closed', () => {
+      globalShortcut.unregister('Esc');
     });
   }, 'image/png');
 }
@@ -66,9 +75,8 @@ function takeScreenshot(callback, imageFormat) {
       if (_this.callback) {
         _this.callback(canvas.toDataURL(imageFormat));
         return 0;
-      } else {
-        console.log('Need callback!');
       }
+
       video.remove();
       try {
         stream.getTracks()[0].stop();
@@ -86,7 +94,6 @@ function takeScreenshot(callback, imageFormat) {
   desktopCapturer
     .getSources({ types: ['window', 'screen'] })
     .then(async (sources) => {
-      console.log('뭔데', sources);
       for (const source of sources) {
         // Filter: main screen
         if (
@@ -109,7 +116,6 @@ function takeScreenshot(callback, imageFormat) {
                 },
               },
             });
-            console.log('stream', stream);
             _this.handleStream(stream);
           } catch (e) {
             _this.handleError(e);
@@ -122,27 +128,23 @@ function takeScreenshot(callback, imageFormat) {
 const newMask = document.getElementById('createMask');
 
 newMask.addEventListener('click', function (event) {
-  console.log('making');
   createScreenshotWindow(1);
 });
 
 var ocrMask = document.getElementById('ocrMask');
 
 ocrMask.addEventListener('click', function () {
-  console.log('making');
   createScreenshotWindow(2);
 });
 
 ipcRenderer.on('key-shortcut', function (args) {
-  console.log('making');
   createScreenshotWindow(1);
 });
 
 ipcRenderer.on('key-shortcut-ocr', function (args) {
-  console.log('making');
   createScreenshotWindow(2);
 });
 
 ipcRenderer.on('close-crop', function (args) {
-  imgCropWindow.close();
+  // imgCropWindow.close();
 });

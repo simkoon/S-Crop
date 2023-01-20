@@ -52,29 +52,23 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 
-  globalShortcut.register('Alt+CommandOrControl+I', () => {
+  globalShortcut.register('Alt+CommandOrControl+S', () => {
     mainWindow.webContents.send('key-shortcut', 1);
   });
-  globalShortcut.register('Alt+CommandOrControl+O', () => {
+  globalShortcut.register('Alt+CommandOrControl+R', () => {
     mainWindow.webContents.send('key-shortcut-ocr', 2);
   });
-  globalShortcut.register('Esc', () => {
-    mainWindow.webContents.send('close-crop');
-  });
+  // globalShortcut.register('Esc', () => {
+  //   mainWindow.webContents.send('close-crop');
+  // });
 });
 app.on('browser-window-blur', () => {
-  globalShortcut.unregisterAll();
+  // globalShortcut.unregister('Esc');
 });
 app.on('browser-window-focus', () => {
-  globalShortcut.register('Alt+CommandOrControl+I', () => {
-    mainWindow.webContents.send('key-shortcut', 1);
-  });
-  globalShortcut.register('Alt+CommandOrControl+O', () => {
-    mainWindow.webContents.send('key-shortcut-ocr', 2);
-  });
-  globalShortcut.register('Esc', () => {
-    mainWindow.webContents.send('close-crop');
-  });
+  // globalShortcut.register('Esc', () => {
+  //   mainWindow.webContents.send('close-crop');
+  // });
 });
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

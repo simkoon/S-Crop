@@ -19,9 +19,10 @@
       "installerIcon": "fav.ico",
       "uninstallerIcon": "fav.ico",
       "uninstallDisplayName": "S-Crop",
-      "license": "license.txt",
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "perMachine": false,
+      "createDesktopShortcut": true
     }
   },
   "keywords": [
