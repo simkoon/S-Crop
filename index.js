@@ -8,6 +8,7 @@ const { ipcRenderer } = require('electron');
 var imgCropWindow;
 
 function createScreenshotWindow(requestType) {
+  imgCropWindow?.isClosable && imgCropWindow?.close();
   takeScreenshot(function (imageURL) {
     var request = {
       imageURL: imageURL,
@@ -26,20 +27,21 @@ function createScreenshotWindow(requestType) {
         webSecurity: false,
       },
     });
-    imgCropWindow.loadFile('mask.html').then(() => {
-      imgCropWindow.webContents.send('request-object', request);
+    imgCropWindow?.loadFile('mask.html').then(() => {
+      imgCropWindow?.webContents?.send('request-object', request);
     });
-
-    imgCropWindow.once('ready-to-show', () => {
-      imgCropWindow.show();
-      globalShortcut.register('Esc', () => {
-        imgCropWindow.close();
+    
+    imgCropWindow?.once('ready-to-show', () => {
+      imgCropWindow?.show();
+      globalShortcut?.register('Esc', () => {
+        imgCropWindow?.close();
       });
       // imgCropWindow.openDevTools();
     });
 
-    imgCropWindow.on('closed', () => {
-      globalShortcut.unregister('Esc');
+    imgCropWindow?.on('closed', () => {
+      globalShortcut?.unregister('Esc');
+      imgCropWindow = null;
     });
   }, 'image/png');
 }
