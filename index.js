@@ -30,7 +30,7 @@ function createScreenshotWindow(requestType) {
     imgCropWindow?.loadFile('mask.html').then(() => {
       imgCropWindow?.webContents?.send('request-object', request);
     });
-    
+
     imgCropWindow?.once('ready-to-show', () => {
       imgCropWindow?.show();
       globalShortcut?.register('Esc', () => {
@@ -129,22 +129,36 @@ function takeScreenshot(callback, imageFormat) {
 
 const newMask = document.getElementById('createMask');
 
+let timer;
+
 newMask.addEventListener('click', function (event) {
-  createScreenshotWindow(1);
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(function () {
+    createScreenshotWindow(1);
+  }, 200);
 });
 
 var ocrMask = document.getElementById('ocrMask');
 
 ocrMask.addEventListener('click', function () {
-  createScreenshotWindow(2);
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(function () {
+    createScreenshotWindow(2);
+  }, 200);
 });
 
 ipcRenderer.on('key-shortcut', function (args) {
-  createScreenshotWindow(1);
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(function () {
+    createScreenshotWindow(1);
+  }, 200);
 });
 
 ipcRenderer.on('key-shortcut-ocr', function (args) {
-  createScreenshotWindow(2);
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(function () {
+    createScreenshotWindow(2);
+  }, 200);
 });
 
 ipcRenderer.on('close-crop', function (args) {
