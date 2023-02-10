@@ -1,6 +1,6 @@
 {
   "name": "S-Crop",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Snipping tool with OCR feature",
   "main": "main.js",
   "scripts": {
@@ -34,8 +34,8 @@
   ],
   "author": "MB",
   "devDependencies": {
-    "electron": "^22.0.3",
-    "electron-builder": "^22.10.5"
+    "electron": "^23.0.0",
+    "electron-builder": "^23.6.0"
   },
   "dependencies": {
     "@electron/remote": "^2.0.9",

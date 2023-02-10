@@ -3,6 +3,7 @@ const { ipcRenderer, clipboard, nativeImage } = require('electron');
 const { getCurrentWindow, globalShortcut } = require('@electron/remote');
 const fs = require('fs');
 const path = require('path');
+const { PSM } = require('tesseract.js');
 
 function blob_to_buffer(blob, callback) {
   const file_reader = new FileReader();
@@ -93,40 +94,74 @@ function mask(imageURL, type) {
         if (exists === false) {
           fs.mkdirSync(`${path.resolve(__dirname, '..')}/assets`);
         }
+        const imgPixels = ctx.getImageData(0, 0, cc.w, cc.h);
 
+        for (var y = 0; y < imgPixels.height; y++) {
+          for (var x = 0; x < imgPixels.width; x++) {
+            var i = y * 4 * imgPixels.width + x * 4;
+            var avg =
+              (imgPixels.data[i] +
+                imgPixels.data[i + 1] +
+                imgPixels.data[i + 2]) /
+              3;
+            imgPixels.data[i] = avg;
+            imgPixels.data[i + 1] = avg;
+            imgPixels.data[i + 2] = avg;
+          }
+        }
+        ctx.putImageData(
+          imgPixels,
+          0,
+          0,
+          0,
+          0,
+          imgPixels.width,
+          imgPixels.height
+        );
+        const greyImg = canvasElement.toDataURL();
         fs.writeFile(
           `${path.resolve(__dirname, '..')}/assets/test.png`,
           `${imgUrl}`.split(';base64,').pop(),
           'base64',
-          function (err) {
-            Tesseract.recognize(imgUrl, 'eng+kor', {
-              logger: (m) => m,
-            }).then(({ data: { text } }) => {
-              const pasedHtml = text
+          async function (err) {
+            const worker = await Tesseract.createWorker();
+
+            await worker.loadLanguage('eng+kor');
+            await worker.initialize('eng+kor');
+            await worker.setParameters({
+              preserve_interword_spaces: '0',
+              tessedit_pageseg_mode: PSM.AUTO,
+            });
+            const {
+              data: { text },
+            } = await worker.recognize(greyImg);
+            clipboard.writeHTML(`
+            <table>
+              ${text
+                .replaceAll('|', '')
                 .split('\n')
                 .map(
                   (line) =>
                     `<tr>${line
                       .split(' ')
                       .reduce(
-                        (result, td) => `${result}<td>${td}</td>`,
+                        (result, td) =>
+                          td.trim() !== '' ? `${result}<td>${td}</td>` : result,
                         ''
                       )}</tr>`
-                );
-              clipboard.writeHTML(`
-                <table>
-                  ${pasedHtml.reduce((acc, cur) => acc + cur, '')}
-                  <img src="${path.resolve(__dirname, '..')}/assets/test.png"/>
-                </table>`);
-              var x = document.getElementById('snackbarText');
-              x.innerHTML = 'Text copied to clipboard..!!❤️';
-              x1.className = x1.className.replace('show', '');
-              x.className = 'show';
-              setTimeout(function () {
-                x.className = x.className.replace('show', '');
-                window.close();
-              }, 1000);
-            });
+                )
+                .reduce((acc, cur) => acc + cur, '')}
+              <img src="${path.resolve(__dirname, '..')}/assets/test.png"/>
+            </table>`);
+            const x = document.getElementById('snackbarText');
+            x.innerHTML = 'Text copied to clipboard..!!❤️';
+            x1.className = x1.className.replace('show', '');
+            x.className = 'show';
+            setTimeout(function () {
+              x.className = x.className.replace('show', '');
+              window.close();
+            }, 1000);
+            await worker.terminate();
           }
         );
       }
